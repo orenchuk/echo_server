@@ -20,19 +20,23 @@ inline long long to_us(const D& d)
 }
 
 int main(int argc, const char * argv[]) {
-    boost::asio::io_service service;
-    boost::asio::ip::tcp::endpoint ep(boost::asio::ip::address::from_string("127.0.0.1"), 8001);
-    string msg = "hello";
-    auto start = get_current_time_fenced();
-    for ( int i = 0; i < 50000; ++i) {
-        Client::start(ep, msg, service);
-        //std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
-//        boost::this_thread::sleep(boost::posix_time::millisec(100));
+    try {
+        boost::asio::io_service service;
+        boost::asio::ip::tcp::endpoint ep(boost::asio::ip::address::from_string("127.0.0.1"), 8001);
+        string msg = "hello";
+        auto start = get_current_time_fenced();
+        for ( int i = 0; i < 50000; ++i) {
+            Client::start(ep, msg, service);
+            //std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
+    //        boost::this_thread::sleep(boost::posix_time::millisec(100));
+        }
+        service.run();
+        auto stop = get_current_time_fenced();
+        auto total = to_us(stop - start);
+        cout << "Time: " << total << "s" << endl;
+        Client::print_out();
+    } catch (std::exception& e) {
+        cout << "Exception: " << e.what() << endl;
     }
-    service.run();
-    auto stop = get_current_time_fenced();
-    auto total = to_us(stop - start);
-    cout << "Time: " << total << "s" << endl;
-    Client::print_out();
     return 0;
 }

@@ -1,6 +1,9 @@
 #include "Client.hpp"
 
 map<string, int> server_response;
+//std::mutex m;
+int counter = 0, counter2 = 0, do_read_counter = 0;
+
 
 Client::Client(const string& message, boost::asio::io_service& service)
     : socket_(service), started_(true), message_(message) {}
@@ -32,6 +35,7 @@ void Client::do_write(const string& msg) {
 }
 
 void Client::on_connect(const boost::system::error_code& err) {
+    counter++;
     if (!err) {
         do_write(message_ + "\n");
     } else {
@@ -40,20 +44,25 @@ void Client::on_connect(const boost::system::error_code& err) {
 }
 
 void Client::on_read(const boost::system::error_code& err, size_t bytes) {
+    counter2++;
     if (!err) {
         string copy(read_buffer_, bytes - 1);
 //        cout << "server echoed our " << message_ << ": " << (copy == message_ ? "OK" : "FAIL") << endl;
         copy == message_ ? ++server_response["OK"] : ++server_response["FAIL"];
-    }
+    } else { cout<<"on_read error occuired"<<endl; }
     stop();
 }
 
 void Client::do_read() {
+    do_read_counter++;
     boost::asio::async_read(socket_, boost::asio::buffer(read_buffer_), boost::bind(&Client::read_complete, shared_from_this(), _1, _2), boost::bind(&Client::on_read, shared_from_this(), _1, _2));
 }
 
 size_t Client::read_complete(const boost::system::error_code& err, size_t bytes) {
-    if (err) return 0;
+    if (err) {
+        cout << "read_complete error occuired" << endl;
+        return 0;
+    }
     bool found = std::find(read_buffer_, read_buffer_ + bytes, '\n') < read_buffer_ + bytes;
     // we read one-by-one until we get to enter, no buffering
     return found ? 0 : 1;
@@ -62,5 +71,7 @@ size_t Client::read_complete(const boost::system::error_code& err, size_t bytes)
 void Client::print_out() {
     cout << "OK: " << server_response["OK"] << endl;
     cout << "FAIL: " << server_response["FAIL"] << endl;
+    cout << "on_connection counter: " << counter << endl << "on_read counter: " << counter2 << endl;
+    cout << "do_read counter: " << do_read_counter << endl;
 }
 

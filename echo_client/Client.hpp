@@ -9,6 +9,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <string>
 #include <map>
+#include <mutex>
 
 using std::string;
 using std::cout;

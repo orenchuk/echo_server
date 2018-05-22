@@ -38,6 +38,7 @@ public:
         }
         else
         {
+            std::cout << "handle_read error occuired" << std::endl;
             delete this;
         }
     }
@@ -53,6 +54,7 @@ public:
         }
         else
         {
+            std::cout << "handle_write error occuired" << std::endl;
             delete this;
         }
     }
@@ -89,6 +91,7 @@ public:
         }
         else
         {
+            std::cout << "handle_accept error occuired" << std::endl;
             delete new_session;
         }
     }
