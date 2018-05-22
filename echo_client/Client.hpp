@@ -1,7 +1,6 @@
 #ifndef Client_hpp
 #define Client_hpp
 
-#include <stdio.h>
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
